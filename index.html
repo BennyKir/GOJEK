@@ -5,67 +5,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Aplikasi Pesanan Transportasi</title>
   
-  <!-- Bootstrap & FontAwesome -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css"/>
 
   <style>
     body, html { height: 100%; margin: 0; background-color: #f5f5f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
-    
-    /* Map Area (40% viewport, fixed) */
     #map { height: 40vh; width: 100%; position: absolute; top: 0; left: 0; z-index: 1; }
-    
-    /* Floating Map Buttons */
     .floating-buttons { position: absolute; top: 15px; right: 15px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
     .btn-floating { background: white; border: none; border-radius: 50%; width: 40px; height: 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; color: #0d6efd; cursor: pointer; transition: background 0.2s; }
     .btn-floating:active { background: #f0f0f0; }
-    
     .btn-darurat { background: white; border: none; border-radius: 20px; padding: 8px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); color: #dc3545; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; position: absolute; top: 15px; left: 50%; transform: translateX(-50%); z-index: 1000;}
-    
-    /* Bottom Sheet Area */
     .bottom-sheet { position: absolute; top: 35vh; left: 0; width: 100%; height: 65vh; background: white; border-radius: 20px 20px 0 0; z-index: 2; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
     .drag-handle { width: 40px; height: 5px; background: #ddd; border-radius: 3px; margin: 10px auto; }
     .scrollable-content { flex: 1; overflow-y: auto; padding: 0 15px 100px 15px; }
-    
-    /* Info Rows */
     .info-row { display: flex; align-items: flex-start; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
     .info-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 15px; overflow: hidden; }
-    .info-icon.green { background: #21b14c; color: white; }
-    .info-icon.blue { background: #0d6efd; color: white; cursor: pointer; box-shadow: 0 2px 8px rgba(13, 110, 253, 0.4); transition: transform 0.2s, background 0.2s;}
-
-    .info-icon.white { background: #ffffff; color: white; cursor: pointer; box-shadow: 0 2px 8px rgba(13, 110, 253, 0.4); transition: transform 0.2s, background 0.2s;}
-
-    .info-icon.blue:hover { transform: scale(1.05); background: #0b5ed7; }
     
-    /* Placeholder Icon Backgrounds */
-    .icon-placeholder { background-color: #e9ecef; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #21b14c; font-size: 1.2rem; }
+    /* Ikon dapat di-klik dengan gaya baru */
+    .info-icon.actionable { background: #0d6efd; color: white; cursor: pointer; box-shadow: 0 2px 8px rgba(13, 110, 253, 0.4); transition: transform 0.2s, background 0.2s; }
+    .info-icon.actionable:hover { transform: scale(1.05); background: #0b5ed7; }
+    .info-icon.actionable.green { background: #21b14c; box-shadow: 0 2px 8px rgba(33, 177, 76, 0.4); }
+    .info-icon.actionable.green:hover { background: #198754; }
     
     .info-text { flex: 1; }
     .label-small { font-size: 0.8rem; color: #6c757d; margin-bottom: 2px; }
-    
-    /* Editable Inputs */
     .editable-input { border: none; border-bottom: 1px dashed #ccc; background: transparent; font-weight: bold; font-size: 1rem; width: 100%; padding: 2px 0; outline: none; transition: border-color 0.2s; color: #333; }
     .editable-input:focus { border-bottom: 1px dashed #0d6efd; }
     .editable-input.title { font-size: 1.1rem; }
     .editable-input.subtitle { font-size: 0.9rem; font-weight: normal; color: #6c757d; border-bottom: 1px dashed transparent; }
     .editable-input.subtitle:hover, .editable-input.subtitle:focus { border-bottom: 1px dashed #ccc; }
-    
     .rating-row { display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-top: 5px; }
     .rating-input { border: none; border-bottom: 1px dashed #ccc; background: transparent; width: 25px; text-align: center; font-size: 0.85rem; padding: 0; outline: none; margin: 0 3px; font-weight: bold; color: #333;}
     .rating-count-input { border: none; border-bottom: 1px dashed #ccc; background: transparent; width: 35px; text-align: center; font-size: 0.85rem; padding: 0; outline: none; margin-left: 3px; font-weight: bold; color: #333;}
-    
-    /* Action Button */
     .bottom-action { position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px 25px 80px; background: linear-gradient(to top, white 85%, rgba(255,255,255,0)); z-index: 10; }
     .btn-swipe { background: #0d6efd; color: white; border: none; border-radius: 12px; width: 100%; padding: 15px; font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3); transition: background 0.2s;}
     .btn-swipe:active { background: #0b5ed7; }
-    
     .custom-div-icon { background: transparent; border: none; }
-
-    /* Custom Toast Notification */
     #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
     .custom-toast { background: rgba(33, 37, 41, 0.95); color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 500; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: toastFadeInOut 3.5s forwards; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(4px); }
     .custom-toast.error { background: rgba(220, 53, 69, 0.95); }
@@ -93,14 +70,14 @@
     
     <!-- Customer Info Row -->
     <div class="info-row">
-      <div class="info-icon">
-        <div class="icon-placeholder"><i class="fa-solid fa-box"></i></div>
+      <div class="info-icon actionable green" onclick="ruteJemput()" title="Cari rute dari GPS ke titik jemput">
+        <i class="fa-solid fa-box" style="font-size: 1.2rem;"></i>
       </div>
       <div class="info-text">
         <div class="label-small">Dipesan oleh</div>
         <input type="text" class="editable-input title" value="Abdurrahmanthoyyib">
-        <input type="text" id="end" class="editable-input subtitle mt-1" value="Jalan Duri Selatan" placeholder="Ketik Tujuan Disini...">
-        <input type="text" class="editable-input subtitle" value="Titip sekuriti BCA pak ahmad">
+        <!-- Input Alamat Jemput Baru Ditambahkan -->
+        <input type="text" id="start" class="editable-input subtitle mt-1" value="Pasar Mayestik" placeholder="Ketik Alamat Jemput...">
         <div class="rating-row">
           <input type="text" class="rating-input" value="4.5"> <i class="fa-solid fa-star text-warning" style="font-size: 0.8rem;"></i> 
           (<input type="text" class="rating-count-input" value="498"> <i class="fa-solid fa-user" style="font-size: 0.7rem; margin-left: 2px;"></i>)
@@ -110,25 +87,23 @@
 
     <!-- Destination Info Row -->
     <div class="info-row">
-      <div class="info-icon blue" onclick="buatRute(true)" title="Klik untuk mencari rute dari lokasi saat ini">
+      <div class="info-icon actionable" onclick="ruteAntar()" title="Cari rute antar & hitung tarif">
         <i class="fa-solid fa-location-crosshairs" style="font-size: 1.2rem;"></i>
       </div>
       <div class="info-text">
         <div class="label-small" style="color: #0d6efd; font-weight: 600; margin-bottom: 4px;">Tujuan Antar</div>
-        <input type="text" class="editable-input title" value="Blok M Square">
+        <input type="text" id="end" class="editable-input title" value="Blok M Square" placeholder="Ketik Tujuan Disini...">
         <input type="text" class="editable-input subtitle mt-1" value="Lobby Berlian Dekat Sari Ratu">
-        <input type="text" class="editable-input subtitle" value="Blok M Square, Jl. Sultan Hasanudin...">
       </div>
     </div>
 
-
-<br><br>
+    <br>
     <div class="info-row">
       <div class="info-text">
         <div class="editable-input title" style="color: #21b14c; font-weight: 600;">Dibayar Pakai</div>
       </div>
-      <div class="info-text">
-        <div class="editable-input title" style="color: #21b14c; font-weight: 600; text-align: right;"><i class="fa-solid fa-money-bill"></i> Tunai</div>
+      <div class="info-text" style="text-align: right;">
+        <div class="editable-input title" style="color: #21b14c; font-weight: 600;"><i class="fa-solid fa-money-bill"></i> Tunai</div>
       </div>
     </div>
 	
@@ -137,22 +112,11 @@
         <div class="editable-input title" style="font-weight: 900;">Pendapatan</div>
       </div>
       <div class="info-text">
-		<input type="text" class="editable-input title" style="font-weight: 900; text-align: right;" value="Rp16.000">
+        <!-- ID Ditambahkan untuk kalkulasi otomatis -->
+        <input type="text" id="pendapatan" class="editable-input title" style="font-weight: 900; text-align: right;" value="Rp0">
       </div>
     </div>
-<br><br>
-    <div class="info-row">
-      <div class="info-icon">
-        <i class="fa-solid fa-circle-question" style="font-size: 2rem;"></i>
-      </div>
-      <div class="info-text">
-        <div class="editable-input title" style="font-weight: 900;">Bantuan</div>
-		<div class="editable-input subtitle">Siap bantu 24 jam</div>
-      </div>
-    </div>
-<br><br>
-
-	  
+    <br><br>
 
   </div>
   
@@ -168,177 +132,139 @@
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
 <script>
-  // Inisialisasi Peta
   var map = L.map('map', {zoomControl: false}).setView([-6.24, 106.8], 14);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap',
-    maxZoom: 19
+    attribution: '© OpenStreetMap', maxZoom: 19
   }).addTo(map);
 
   var routingControl = null;
-  var gpsCoords = [-6.24, 106.8]; // Lokasi Default jika GPS gagal
+  var isCalculatingFare = false; // Flag status kalkulasi
 
-  // Fungsi Notifikasi Toast (Pengganti Alert)
   function showToast(message, type = "default") {
     const container = document.getElementById('toast-container');
     const toast = document.createElement('div');
     toast.className = `custom-toast ${type}`;
-    
     let icon = '<i class="fa-solid fa-circle-info"></i>';
     if(type === 'error') icon = '<i class="fa-solid fa-circle-exclamation"></i>';
     if(type === 'success') icon = '<i class="fa-solid fa-circle-check"></i>';
-    
     toast.innerHTML = `${icon} <span>${message}</span>`;
     container.appendChild(toast);
-    
-    // Hapus dari DOM setelah animasi selesai
-    setTimeout(() => {
-      if (container.contains(toast)) {
-        container.removeChild(toast);
-      }
-    }, 3500);
+    setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 3500);
   }
 
-  // Fungsi Mengambil Lokasi Live GPS berbasis Promise
   function getLiveLocation() {
     return new Promise((resolve, reject) => {
-      if (!navigator.geolocation) {
-        reject(new Error("Browser Anda tidak mendukung GPS."));
-      } else {
-        navigator.geolocation.getCurrentPosition(
+      if (!navigator.geolocation) reject(new Error("Browser Anda tidak mendukung GPS."));
+      else navigator.geolocation.getCurrentPosition(
           (pos) => resolve([pos.coords.latitude, pos.coords.longitude]),
           (err) => reject(new Error("Gagal mengambil lokasi GPS. Pastikan izin lokasi aktif.")),
           { enableHighAccuracy: true, timeout: 7000, maximumAge: 0 }
         );
-      }
     });
   }
 
-  // Geocoding alamat menjadi koordinat
   async function geocode(address) {
     try {
       const url = "https://nominatim.openstreetmap.org/search?format=json&q=" + encodeURIComponent(address);
       const response = await fetch(url, { headers: { 'Accept': 'application/json' }});
       const data = await response.json();
-      if (data.length > 0) {
-        return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.error("Geocoding error:", error);
+      if (data.length > 0) return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
       return null;
-    }
+    } catch (error) { return null; }
   }
 
-  // Konfigurasi Routing
   routingControl = L.Routing.control({
     waypoints: [],
-    router: L.Routing.osrmv1({
-      serviceUrl: "https://router.project-osrm.org/route/v1"
-    }),
-    routeWhileDragging: false,
-    addWaypoints: false,
-    show: false,
-    lineOptions: {
-      styles: [{color: '#0d6efd', opacity: 0.8, weight: 6}]
-    },
+    router: L.Routing.osrmv1({ serviceUrl: "https://router.project-osrm.org/route/v1" }),
+    routeWhileDragging: false, addWaypoints: false, show: false,
+    lineOptions: { styles: [{color: '#0d6efd', opacity: 0.8, weight: 6}] },
     createMarker: function(i, waypoint, n) {
-      // Custom Marker Styling
-      if (i === 0) { // Origin (Jemput)
-         return L.marker(waypoint.latLng, {
-             icon: L.divIcon({
-                 className: 'custom-div-icon',
-                 html: '<div style="background-color:#21b14c; width:34px; height:34px; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-motorcycle" style="color:white; font-size:16px;"></i></div>',
-                 iconSize: [34, 34],
-                 iconAnchor: [17, 17]
-             })
-         }).bindPopup("Lokasi Jemput (Anda)");
-      } else if (i === n - 1) { // Destination (Tujuan)
-          return L.marker(waypoint.latLng, {
-             icon: L.divIcon({
-                 className: 'custom-div-icon',
-                 html: '<div style="background-color:#dc3545; width:34px; height:34px; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-location-dot" style="color:white; font-size:16px;"></i></div>',
-                 iconSize: [34, 34],
-                 iconAnchor: [17, 17]
-             })
-         }).bindPopup("Tujuan Pengantaran");
+      if (i === 0) { 
+         return L.marker(waypoint.latLng, { icon: L.divIcon({ className: 'custom-div-icon', html: '<div style="background-color:#21b14c; width:34px; height:34px; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-motorcycle" style="color:white; font-size:16px;"></i></div>', iconSize: [34, 34], iconAnchor: [17, 17] }) }).bindPopup("Titik Awal");
+      } else if (i === n - 1) { 
+          return L.marker(waypoint.latLng, { icon: L.divIcon({ className: 'custom-div-icon', html: '<div style="background-color:#dc3545; width:34px; height:34px; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-location-dot" style="color:white; font-size:16px;"></i></div>', iconSize: [34, 34], iconAnchor: [17, 17] }) }).bindPopup("Tujuan Akhir");
       }
     }
   }).addTo(map);
 
-  // Tombol Manual Crosshairs
-  async function gunakanLokasiManual() {
-    showToast("Mencari lokasi Anda...", "default");
+  // EVENT LISTENER: Mencegat kalkulasi jarak sesaat setelah rute digambar
+  routingControl.on('routesfound', function(e) {
+    if(isCalculatingFare) {
+        var routes = e.routes;
+        var summary = routes[0].summary;
+        var distanceKm = summary.totalDistance / 1000;
+        var fare = Math.round(distanceKm * 5000); // Rp 5.000 per Km
+        
+        // Format uang ke Rupiah
+        var formattedFare = "Rp" + fare.toLocaleString('id-ID');
+        document.getElementById("pendapatan").value = formattedFare;
+        
+        showToast(`Rute antar ditemukan: ${distanceKm.toFixed(1)} km. Tarif diperbarui!`, "success");
+        isCalculatingFare = false; // Reset flag
+    }
+  });
+
+  // AKSI 1: RUTE JEMPUT (Dari GPS Live -> Alamat Jemput)
+  async function ruteJemput() {
+    showToast("Mendeteksi lokasi Anda menuju titik jemput...", "default");
+    const startInput = document.getElementById("start").value;
+    
+    if (!startInput) { showToast("Alamat jemput tidak boleh kosong!", "error"); return; }
+
     try {
-      const currentLoc = await getLiveLocation();
-      gpsCoords = currentLoc;
-      map.flyTo(gpsCoords, 16, { animate: true, duration: 1 });
-      showToast("Lokasi diperbarui!", "success");
+      const liveLoc = await getLiveLocation();
+      const endLatLng = await geocode(startInput);
+      
+      if (!endLatLng) { showToast("Gagal menemukan koordinat alamat jemput!", "error"); return; }
+
+      isCalculatingFare = false; // Matikan kalkulasi uang
+      routingControl.setWaypoints([
+        L.latLng(liveLoc[0], liveLoc[1]),
+        L.latLng(endLatLng[0], endLatLng[1])
+      ]);
+      
+      fitMapBounds();
     } catch (error) {
       showToast(error.message, "error");
     }
   }
 
-  // Fungsi Utama Pembuatan Rute
-  // isUserTriggered: true jika ditekan tombol cari, false jika render awal (otomatis)
-  async function buatRute(isUserTriggered = false) {
+  // AKSI 2: RUTE ANTAR (Dari Alamat Jemput -> Alamat Tujuan)
+  async function ruteAntar() {
+    showToast("Menghitung rute antar dan kalkulasi tarif...", "default");
+    const startInput = document.getElementById("start").value;
     const endInput = document.getElementById("end").value;
     
-    if (!endInput) {
-      showToast("Isi tujuan terlebih dahulu!", "error");
-      return;
-    }
+    if (!startInput || !endInput) { showToast("Pastikan alamat jemput dan tujuan terisi!", "error"); return; }
 
-    // Jika dipicu oleh tombol, ambil Live GPS terlebih dahulu
-    if (isUserTriggered) {
-      showToast("Menyiapkan rute dari lokasi Anda...", "default");
-      try {
-        const liveLoc = await getLiveLocation();
-        gpsCoords = liveLoc; // Update titik awal ke GPS real-time
-      } catch (error) {
-        showToast("Gagal mendapat GPS, menggunakan lokasi terakhir.", "error");
-        // Melanjutkan dengan gpsCoords terakhir (fallback)
-      }
-    }
+    try {
+      const startLatLng = await geocode(startInput);
+      const endLatLng = await geocode(endInput);
+      
+      if (!startLatLng || !endLatLng) { showToast("Salah satu alamat tidak ditemukan di sistem!", "error"); return; }
 
-    // Cari Koordinat Tujuan
-    const endLatLng = await geocode(endInput);
-    if (!endLatLng) {
-      showToast("Lokasi tujuan tidak ditemukan!", "error");
-      return;
-    }
-
-    // Terapkan ke Routing Control
-    if (routingControl) {
-        routingControl.setWaypoints([
-          L.latLng(gpsCoords[0], gpsCoords[1]),
-          L.latLng(endLatLng[0], endLatLng[1])
-        ]);
-
-        if (isUserTriggered) {
-            showToast("Rute berhasil dibuat!", "success");
-        }
-
-        // Sesuaikan tampilan peta untuk mencakup seluruh rute
-        setTimeout(function() {
-          const waypoints = routingControl.getWaypoints();
-          if(waypoints && waypoints.length >= 2 && waypoints[0].latLng && waypoints[1].latLng) {
-              const bounds = L.latLngBounds([waypoints[0].latLng, waypoints[1].latLng]);
-              map.fitBounds(bounds, { padding: [40, 40] });
-          }
-        }, 800);
+      isCalculatingFare = true; // Aktifkan kalkulasi uang
+      routingControl.setWaypoints([
+        L.latLng(startLatLng[0], startLatLng[1]),
+        L.latLng(endLatLng[0], endLatLng[1])
+      ]);
+      
+      fitMapBounds();
+    } catch (error) {
+      showToast("Gagal memproses rute antar.", "error");
     }
   }
 
-  // Generate rute awal secara otomatis (tanpa memaksa prompt GPS pada saat load pertama agar tidak mengganggu)
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      buatRute(false);
-    }, 500);
-  });
-
+  function fitMapBounds() {
+    setTimeout(function() {
+      const waypoints = routingControl.getWaypoints();
+      if(waypoints && waypoints.length >= 2 && waypoints[0].latLng && waypoints[1].latLng) {
+          const bounds = L.latLngBounds([waypoints[0].latLng, waypoints[1].latLng]);
+          map.fitBounds(bounds, { padding: [40, 40] });
+      }
+    }, 800);
+  }
 </script>
 </body>
 </html>
