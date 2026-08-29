@@ -17,9 +17,9 @@
     .btn-floating { background: white; border: none; border-radius: 50%; width: 40px; height: 40px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; color: #0d6efd; cursor: pointer; transition: background 0.2s; }
     .btn-floating:active { background: #f0f0f0; }
     .btn-darurat { background: white; border: none; border-radius: 20px; padding: 8px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); color: #dc3545; font-weight: bold; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; position: absolute; top: 15px; left: 50%; transform: translateX(-50%); z-index: 1000;}
-    .bottom-sheet { position: absolute; top: 35vh; left: 0; width: 100%; height: 65vh; background: white; border-radius: 20px 20px 0 0; z-index: 2; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+    .bottom-sheet { position: absolute; top: 36%; bottom: 0; left: 0; width: 100%; background: white; border-radius: 20px 20px 0 0; z-index: 2; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
     .drag-handle { width: 40px; height: 5px; background: #ddd; border-radius: 3px; margin: 10px auto; }
-    .scrollable-content { flex: 1; overflow-y: auto; padding: 0 15px 120px 15px; }
+    .scrollable-content { flex: 1; overflow-y: auto; padding: 0 15px 0 15px; }
     .info-row { display: flex; align-items: flex-start; padding: 15px 0; border-bottom: 1px solid #f0f0f0; }
     .info-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-right: 15px; overflow: hidden; }
     
@@ -38,7 +38,7 @@
     .rating-row { display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-top: 5px; }
     .rating-input { border: none; border-bottom: 1px dashed #ccc; background: transparent; width: 25px; text-align: center; font-size: 0.85rem; padding: 0; outline: none; margin: 0 3px; font-weight: bold; color: #333;}
     .rating-count-input { border: none; border-bottom: 1px dashed #ccc; background: transparent; width: 35px; text-align: center; font-size: 0.85rem; padding: 0; outline: none; margin-left: 3px; font-weight: bold; color: #333;}
-    .bottom-action { position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px 25px 25px; background: linear-gradient(to top, white 85%, rgba(255,255,255,0)); z-index: 10; }
+    .bottom-action { flex-shrink: 0; position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px 25px 25px; background: linear-gradient(to top, white 85%, rgba(255,255,255,0)); z-index: 10; }
     
     .custom-div-icon { background: transparent; border: none; }
     #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
