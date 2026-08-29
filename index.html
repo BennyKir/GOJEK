@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -38,25 +39,72 @@
     .rating-row { display: flex; align-items: center; font-size: 0.85rem; color: #6c757d; margin-top: 5px; }
     .rating-input { border: none; border-bottom: 1px dashed #ccc; background: transparent; width: 25px; text-align: center; font-size: 0.85rem; padding: 0; outline: none; margin: 0 3px; font-weight: bold; color: #333;}
     .rating-count-input { border: none; border-bottom: 1px dashed #ccc; background: transparent; width: 35px; text-align: center; font-size: 0.85rem; padding: 0; outline: none; margin-left: 3px; font-weight: bold; color: #333;}
-    .bottom-action { position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px 25px 30px; background: linear-gradient(to top, white 85%, rgba(255,255,255,0)); z-index: 10; }
-    .btn-swipe { background: #0d6efd; color: white; border: none; border-radius: 12px; width: 100%; padding: 15px; font-weight: bold; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3); transition: background 0.2s;}
-    .btn-swipe:active { background: #0b5ed7; }
+    .bottom-action { position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px 25px 25px; background: linear-gradient(to top, white 85%, rgba(255,255,255,0)); z-index: 10; }
+    
     .custom-div-icon { background: transparent; border: none; }
     #toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
     .custom-toast { background: rgba(33, 37, 41, 0.95); color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 500; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); animation: toastFadeInOut 3.5s forwards; display: flex; align-items: center; gap: 8px; backdrop-filter: blur(4px); }
     .custom-toast.error { background: rgba(220, 53, 69, 0.95); }
     .custom-toast.success { background: rgba(33, 177, 76, 0.95); }
 
-    /* Custom styles for new features */
+    /* Custom styles for State Features */
     .payment-toggle-btn { cursor: pointer; user-select: none; transition: transform 0.1s; }
     .payment-toggle-btn:active { transform: scale(0.95); }
     .rincian-text { font-size: 0.9rem; color: #6c757d; align-items: center;}
     .rincian-minus { color: #dc3545; font-weight: 600; }
     .rincian-total { font-size: 1.25rem; font-weight: 900; color: #21b14c; }
-    
     .tarif-input { border: 1px solid #ced4da; border-radius: 4px; padding: 2px 8px; width: 90px; text-align: right; font-weight: 600; outline: none; transition: border-color 0.2s;}
     .tarif-input:focus { border-color: #0d6efd; box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);}
     .copyright-footer { text-align: center; font-size: 0.75rem; color: #adb5bd; margin-top: 25px; margin-bottom: 10px; font-weight: 500; }
+
+    /* REAL SWIPE BUTTON CSS */
+    .swipe-container {
+        position: relative;
+        width: 100%;
+        height: 56px;
+        background: #0d6efd;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        transition: background 0.3s ease;
+        user-select: none;
+    }
+    .swipe-track {
+        position: absolute;
+        top: 0; left: 0; height: 100%; width: 0;
+        background: rgba(255,255,255,0.15);
+    }
+    .swipe-text {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 800;
+        font-size: 1.05rem;
+        z-index: 1;
+        pointer-events: none;
+        letter-spacing: 0.5px;
+    }
+    .swipe-knob {
+        position: absolute;
+        top: 4px; left: 4px;
+        width: 48px; height: 48px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #0d6efd;
+        font-size: 1.2rem;
+        z-index: 2;
+        cursor: grab;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        transition: color 0.3s ease;
+    }
+    .swipe-knob:active { cursor: grabbing; }
 
     @keyframes toastFadeInOut {
       0% { opacity: 0; transform: translateY(-20px); }
@@ -115,7 +163,6 @@
         <div class="editable-input title" style="color: #6c757d; font-weight: 600;">Dibayar Pakai</div>
       </div>
       <div class="info-text" style="text-align: right;">
-        <!-- Container interaktif untuk toggle metode pembayaran -->
         <div id="payment-btn" class="editable-input title payment-toggle-btn" style="color: #21b14c; font-weight: 700; border-bottom:none;" onclick="togglePaymentMethod()">
           <i id="payment-icon" class="fa-solid fa-money-bill"></i> <span id="payment-text">Tunai</span>
         </div>
@@ -136,7 +183,6 @@
     <div id="rincian-section" class="flex-column" style="display: none; padding: 15px; background: #f8f9fa; border-radius: 12px; margin-bottom: 10px;">
       <div style="font-weight: 800; margin-bottom: 12px; font-size: 0.95rem;">Rincian</div>
       
-      <!-- Tarif Per Km Interaktif -->
       <div class="d-flex justify-content-between mb-2 rincian-text">
         <span>Tarif per-Km</span>
         <div class="d-flex align-items-center gap-2">
@@ -145,7 +191,6 @@
         </div>
       </div>
       
-      <!-- Tombol Hitung Ulang -->
       <div class="d-flex justify-content-end mb-2">
         <button class="btn btn-sm btn-outline-secondary" onclick="hitungUlang()" style="font-size: 0.75rem; padding: 2px 10px;">
           <i class="fa-solid fa-rotate-right"></i> Hitung Ulang
@@ -171,12 +216,20 @@
     <!-- Footer Keterangan -->
     <div class="copyright-footer">
       Ini adalah simulasi by Benny Kirana &copy; 2026
-	</div>
+    </div>
+
   </div>
   
   <div class="bottom-action">
-    <button class="btn-swipe"><i class="fa-solid fa-arrow-right"></i> Udah di titik jemput</button>
-  <br>
+    <!-- REAL SWIPE COMPONENT -->
+    <div class="swipe-container" id="swipe-container">
+      <div class="swipe-track" id="swipe-track"></div>
+      <div class="swipe-text" id="swipe-text">Udah di titik jemput</div>
+      <div class="swipe-knob" id="swipe-knob">
+        <i class="fa-solid fa-arrow-right"></i>
+      </div>
+		<br>
+    </div>
   </div>
 </div>
 
@@ -187,24 +240,27 @@
 <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
 
 <script>
-  // STATE MANAGEMENT - Memisahkan Data dari Tampilan UI (Best Practice)
+  // STATE MANAGEMENT EXTENDED
   const appState = {
     distanceKm: 0,
     tarifPerKm: 5000,
-    isRouteCalculated: false
+    isRouteCalculated: false,
+    orderPhase: 0 // 0: Jemput, 1: Ambil, 2: Sampai
   };
 
+  // KONFIGURASI FASE ORDER
+  const orderPhasesConfig = [
+    { text: "Udah di titik jemput", color: "#0d6efd", iconColor: "#0d6efd" },   // Biru
+    { text: "Sudah ambil barang", color: "#fd7e14", iconColor: "#fd7e14" },     // Oranye
+    { text: "Sudah sampai tujuan", color: "#21b14c", iconColor: "#21b14c" }     // Hijau
+  ];
+
   var map = L.map('map', {zoomControl: false}).setView([-6.24, 106.8], 14);
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap', maxZoom: 19
-  }).addTo(map);
-
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom: 19 }).addTo(map);
   var routingControl = null;
   var isCalculatingFare = false;
   let isPaymentTunai = true;
 
-  // UTILITAS
   const formatRp = (angka) => "Rp " + angka.toLocaleString('id-ID');
 
   function showToast(message, type = "default") {
@@ -219,63 +275,130 @@
     setTimeout(() => { if (container.contains(toast)) container.removeChild(toast); }, 3500);
   }
 
-  // FUNGSI RENDER - Merender ulang UI berdasarkan State
+  // --- SWIPE LOGIC START ---
+  const swipeContainer = document.getElementById('swipe-container');
+  const swipeKnob = document.getElementById('swipe-knob');
+  const swipeTrack = document.getElementById('swipe-track');
+  const swipeText = document.getElementById('swipe-text');
+
+  let isDragging = false;
+  let startX = 0;
+  let currentX = 0;
+  
+  // Kalkulasi dinamis batas maksimal seret (Responsif)
+  function getMaxDrag() {
+    return swipeContainer.offsetWidth - swipeKnob.offsetWidth - 8; // -8 for padding (4px left + 4px right)
+  }
+
+  function handleDragStart(e) {
+    isDragging = true;
+    startX = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+    swipeKnob.style.transition = 'none';
+    swipeTrack.style.transition = 'none';
+  }
+
+  function handleDragMove(e) {
+    if (!isDragging) return;
+    
+    // Mencegah scroll layar saat menyeret tombol
+    if(e.type.includes('touch')) e.preventDefault(); 
+    
+    let x = e.type.includes('mouse') ? e.clientX : e.touches[0].clientX;
+    currentX = x - startX;
+    
+    const maxDrag = getMaxDrag();
+    if (currentX < 0) currentX = 0;
+    if (currentX > maxDrag) currentX = maxDrag;
+
+    swipeKnob.style.transform = `translateX(${currentX}px)`;
+    swipeTrack.style.width = `${currentX + 24}px`; // Visual cover
+  }
+
+  function handleDragEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    
+    swipeKnob.style.transition = 'transform 0.3s ease-out';
+    swipeTrack.style.transition = 'width 0.3s ease-out';
+
+    const maxDrag = getMaxDrag();
+    
+    // Threshold: Seret harus melebihi 80% untuk sukses
+    if (currentX >= maxDrag * 0.8) {
+        cycleOrderPhase();
+    }
+
+    // Reset posisi (Snap back)
+    swipeKnob.style.transform = `translateX(0px)`;
+    swipeTrack.style.width = `0px`;
+    currentX = 0;
+  }
+
+  function cycleOrderPhase() {
+    // Update State (0 -> 1 -> 2 -> 0)
+    appState.orderPhase = (appState.orderPhase + 1) % 3;
+    const phaseData = orderPhasesConfig[appState.orderPhase];
+
+    // Manipulasi DOM untuk Visual Feedback
+    swipeText.innerText = phaseData.text;
+    swipeContainer.style.background = phaseData.color;
+    swipeKnob.style.color = phaseData.iconColor;
+
+    showToast(`Status diperbarui: ${phaseData.text}`, "success");
+  }
+
+  // Bind Events for Swipe
+  swipeKnob.addEventListener('mousedown', handleDragStart);
+  document.addEventListener('mousemove', handleDragMove);
+  document.addEventListener('mouseup', handleDragEnd);
+
+  swipeKnob.addEventListener('touchstart', handleDragStart, {passive: false});
+  document.addEventListener('touchmove', handleDragMove, {passive: false});
+  document.addEventListener('touchend', handleDragEnd);
+  // --- SWIPE LOGIC END ---
+
+
   function renderRincian() {
     if (!appState.isRouteCalculated) return;
-
-    // Kalkulasi
     const kotor = Math.round(appState.distanceKm * appState.tarifPerKm);
-    const potonganAplikasi = Math.round(kotor * 0.08); // Potongan 8%
+    const potonganAplikasi = Math.round(kotor * 0.08);
     const bersih = kotor - potonganAplikasi;
     
-    // Pembaruan DOM Element
     document.getElementById("pendapatan").value = formatRp(kotor);
     document.getElementById("rincian-jarak").innerText = appState.distanceKm.toFixed(1) + " Km";
     document.getElementById("rincian-potongan").innerText = "- " + formatRp(potonganAplikasi);
     document.getElementById("rincian-bersih").innerText = formatRp(bersih);
-
     document.getElementById("rincian-section").style.display = "flex";
   }
 
-  // EVENT LISTENER BUTTON HITUNG ULANG
   function hitungUlang() {
     if (!appState.isRouteCalculated) {
         showToast("Tentukan rute antar terlebih dahulu!", "error");
         return;
     }
-
     const inputElement = document.getElementById('input-tarif');
     const newTarif = parseInt(inputElement.value);
 
-    // Validasi Logika Dasar
     if (isNaN(newTarif) || newTarif <= 0) {
         showToast("Nilai tarif tidak valid!", "error");
-        inputElement.value = appState.tarifPerKm; // Revert to previous safe state
+        inputElement.value = appState.tarifPerKm;
         return;
     }
-
-    // Update State & Render
     appState.tarifPerKm = newTarif;
     renderRincian();
     showToast("Tarif berhasil dihitung ulang", "success");
   }
 
-  // TOGGLE METODE PEMBAYARAN
   function togglePaymentMethod() {
     const btnContainer = document.getElementById('payment-btn');
     const icon = document.getElementById('payment-icon');
     const text = document.getElementById('payment-text');
-
-    isPaymentTunai = !isPaymentTunai; // Switch boolean state
+    isPaymentTunai = !isPaymentTunai;
 
     if (isPaymentTunai) {
-      icon.className = 'fa-solid fa-money-bill';
-      text.innerText = 'Tunai';
-      btnContainer.style.color = '#21b14c'; // Green
+      icon.className = 'fa-solid fa-money-bill'; text.innerText = 'Tunai'; btnContainer.style.color = '#21b14c';
     } else {
-      icon.className = 'fa-solid fa-wallet';
-      text.innerText = 'Gopay/Kartu';
-      btnContainer.style.color = '#0d6efd'; // Blue
+      icon.className = 'fa-solid fa-wallet'; text.innerText = 'Gopay/Kartu'; btnContainer.style.color = '#0d6efd';
     }
   }
 
@@ -306,96 +429,67 @@
     routeWhileDragging: false, addWaypoints: false, show: false,
     lineOptions: { styles: [{color: '#0d6efd', opacity: 0.8, weight: 6}] },
     createMarker: function(i, waypoint, n) {
-      if (i === 0) { 
-         return L.marker(waypoint.latLng, { icon: L.divIcon({ className: 'custom-div-icon', html: '<div style="background-color:#21b14c; width:34px; height:34px; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-motorcycle" style="color:white; font-size:16px;"></i></div>', iconSize: [34, 34], iconAnchor: [17, 17] }) }).bindPopup("Titik Awal");
-      } else if (i === n - 1) { 
-          return L.marker(waypoint.latLng, { icon: L.divIcon({ className: 'custom-div-icon', html: '<div style="background-color:#dc3545; width:34px; height:34px; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-location-dot" style="color:white; font-size:16px;"></i></div>', iconSize: [34, 34], iconAnchor: [17, 17] }) }).bindPopup("Tujuan Akhir");
-      }
+      if (i === 0) return L.marker(waypoint.latLng, { icon: L.divIcon({ className: 'custom-div-icon', html: '<div style="background-color:#21b14c; width:34px; height:34px; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-motorcycle" style="color:white; font-size:16px;"></i></div>', iconSize: [34, 34], iconAnchor: [17, 17] }) }).bindPopup("Titik Awal");
+      else if (i === n - 1) return L.marker(waypoint.latLng, { icon: L.divIcon({ className: 'custom-div-icon', html: '<div style="background-color:#dc3545; width:34px; height:34px; border-radius:50%; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center;"><i class="fa-solid fa-location-dot" style="color:white; font-size:16px;"></i></div>', iconSize: [34, 34], iconAnchor: [17, 17] }) }).bindPopup("Tujuan Akhir");
     }
   }).addTo(map);
 
-  // MENCEGAT KALKULASI & MENYIMPAN KE STATE
   routingControl.on('routesfound', function(e) {
     if(isCalculatingFare) {
         var summary = e.routes[0].summary;
-        
-        // Simpan jarak ke State
         appState.distanceKm = summary.totalDistance / 1000;
         appState.isRouteCalculated = true;
-        
-        // Eksekusi Render UI berdasarkan State
         renderRincian();
-        
         showToast(`Rute dikalkulasi: ${appState.distanceKm.toFixed(1)} km. Rincian tarif tersedia.`, "success");
-        isCalculatingFare = false; // Reset flag pengaman kalkulasi
+        isCalculatingFare = false;
     }
   });
 
   async function ruteJemput() {
     showToast("Mendeteksi lokasi Anda menuju titik jemput...", "default");
     const startInput = document.getElementById("start").value;
-    
     if (!startInput) { showToast("Alamat jemput tidak boleh kosong!", "error"); return; }
 
     try {
       const liveLoc = await getLiveLocation();
       const endLatLng = await geocode(startInput);
-      
       if (!endLatLng) { showToast("Gagal menemukan koordinat alamat jemput!", "error"); return; }
 
-      isCalculatingFare = false; // Disable kalkulasi tarif
-      appState.isRouteCalculated = false; // Reset state 
-      
-      // Sembunyikan rincian karena ini belum rute antar
+      isCalculatingFare = false; 
+      appState.isRouteCalculated = false; 
       document.getElementById("rincian-section").style.display = "none";
       document.getElementById("pendapatan").value = "Rp 0";
 
-      routingControl.setWaypoints([
-        L.latLng(liveLoc[0], liveLoc[1]),
-        L.latLng(endLatLng[0], endLatLng[1])
-      ]);
-      
+      routingControl.setWaypoints([ L.latLng(liveLoc[0], liveLoc[1]), L.latLng(endLatLng[0], endLatLng[1]) ]);
       fitMapBounds();
-    } catch (error) {
-      showToast(error.message, "error");
-    }
+    } catch (error) { showToast(error.message, "error"); }
   }
 
   async function ruteAntar() {
     showToast("Menghitung rute antar dan kalkulasi tarif...", "default");
     const startInput = document.getElementById("start").value;
     const endInput = document.getElementById("end").value;
-    
     if (!startInput || !endInput) { showToast("Pastikan alamat jemput dan tujuan terisi!", "error"); return; }
 
     try {
       const startLatLng = await geocode(startInput);
       const endLatLng = await geocode(endInput);
-      
       if (!startLatLng || !endLatLng) { showToast("Salah satu alamat tidak ditemukan di sistem!", "error"); return; }
 
-      isCalculatingFare = true; // Trigger kalkulasi otomatis pada event routesfound
-      routingControl.setWaypoints([
-        L.latLng(startLatLng[0], startLatLng[1]),
-        L.latLng(endLatLng[0], endLatLng[1])
-      ]);
-      
+      isCalculatingFare = true;
+      routingControl.setWaypoints([ L.latLng(startLatLng[0], startLatLng[1]), L.latLng(endLatLng[0], endLatLng[1]) ]);
       fitMapBounds();
-    } catch (error) {
-      showToast("Gagal memproses rute antar.", "error");
-    }
+    } catch (error) { showToast("Gagal memproses rute antar.", "error"); }
   }
 
   function fitMapBounds() {
     setTimeout(function() {
       const waypoints = routingControl.getWaypoints();
       if(waypoints && waypoints.length >= 2 && waypoints[0].latLng && waypoints[1].latLng) {
-          const bounds = L.latLngBounds([waypoints[0].latLng, waypoints[1].latLng]);
-          map.fitBounds(bounds, { padding: [40, 40] });
+          map.fitBounds(L.latLngBounds([waypoints[0].latLng, waypoints[1].latLng]), { padding: [40, 40] });
       }
     }, 800);
   }
 </script>
 </body>
 </html>
-
