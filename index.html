@@ -46,7 +46,12 @@
     .custom-toast.error { background: rgba(220, 53, 69, 0.95); }
     .custom-toast.success { background: rgba(33, 177, 76, 0.95); }
 
-    /* Custom styles for State Features */
+    /* Tombol Audio Interaktif */
+    .audio-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 30px; margin-bottom: 5px; cursor: pointer; color: #0d6efd; transition: transform 0.15s ease, opacity 0.2s; user-select: none; padding: 10px; border-radius: 10px; }
+    .audio-btn:active { transform: scale(0.92); opacity: 0.8; background: rgba(13, 110, 253, 0.1); }
+    .audio-text { font-weight: 700; font-size: 0.9rem; }
+	  
+	/* Custom styles for State Features */
     .payment-toggle-btn { cursor: pointer; user-select: none; transition: transform 0.1s; }
     .payment-toggle-btn:active { transform: scale(0.95); }
     .rincian-text { font-size: 0.9rem; color: #6c757d; align-items: center;}
@@ -212,6 +217,12 @@
       </div>
     </div>
 
+    <!-- Trigger Audio Order Masuk -->
+    <div class="audio-btn" onclick="playOrderSound()">
+      <i class="fa-solid fa-volume-high"></i>
+      <span class="audio-text">Putar suara order masuk</span>
+    </div>
+
     <!-- Footer Keterangan -->
     <div class="copyright-footer">
       Ini adalah simulasi by Benny Kirana &copy; 2026
@@ -355,6 +366,18 @@
   document.addEventListener('touchend', handleDragEnd);
   // --- SWIPE LOGIC END ---
 
+ 
+  // Inisialisasi Audio Objek
+  // Catatan: Tautan ini menggunakan file suara pendek publik. Jika Anda punya file asli mp3 gojek, ganti string tautan di bawah ini.
+  const orderNotificationSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+
+  function playOrderSound() {
+    orderNotificationSound.currentTime = 0; // Reset ke detik ke-0 setiap ditekan
+    orderNotificationSound.play().catch(error => {
+      showToast("Gagal memutar audio. Pastikan perangkat tidak dalam mode senyap.", "error");
+      console.error("Audio playback error:", error);
+    });
+	  
 
   function renderRincian() {
     if (!appState.isRouteCalculated) return;
